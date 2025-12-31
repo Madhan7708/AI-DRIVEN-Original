@@ -1,0 +1,170 @@
+[
+  {
+    "Timestamp":"2025-10-01 06:32:20",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-01 07:03:20",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-01 11:55:00",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-01 12:26:00",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-01 18:29:10",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-01 18:56:41",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-02 06:30:59",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-02 07:01:59",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-02 12:04:57",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-02 12:33:57",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-02 18:26:30",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-02 18:59:30",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-03 06:33:32",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-03 07:04:32",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-03 12:04:21",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-03 12:35:21",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-03 18:26:19",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-03 18:56:19",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-04 06:30:29",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-04 07:01:29",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-04 12:04:54",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-04 12:34:54",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-04 18:33:45",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-04 19:02:45",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-05 06:31:15",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-05 07:03:15",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-05 12:05:18",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-05 12:37:18",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-05 18:33:39",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-05 19:06:39",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-06 06:29:29",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-06 07:01:29",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-06 12:00:22",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-06 12:31:22",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-06 18:27:11",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-06 18:56:11",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-07 06:32:16",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-07 07:02:16",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-07 12:03:22",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-07 12:33:22",
+    "State":"OFF"
+  },
+  {
+    "Timestamp":"2025-10-07 18:27:33",
+    "State":"ON"
+  },
+  {
+    "Timestamp":"2025-10-07 18:57:33",
+    "State":"OFF"
+  }
+]
