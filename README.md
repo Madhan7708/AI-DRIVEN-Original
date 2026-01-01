@@ -67,6 +67,7 @@ AI-DRIVEN-BEHAVIORAL-AND-MOTION-BASED-CONTROL-OF-ELECTRICAL-APPLIANCE
 │   │   └── predictionModel.js
 └── README.md
 
+
 ⚙️ Step 3: Run the Express.js Backend
 1️⃣ Navigate to backend folder
 cd backend
