@@ -63,6 +63,7 @@ app.post("/run-ml", async (req, res) => {
 
     // 2️⃣ Get ML response
     const predictions = flaskResponse.data;
+    res.json(predictions);
 
     console.log("ML Response:", predictions);
 
