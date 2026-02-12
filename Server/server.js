@@ -1,18 +1,39 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const axios = require("axios");
+const cors = require("cors");
 
 const app = express();
+
+// =============================
+// 🔹 Environment Variables
+// =============================
 const PORT = process.env.PORT || 8000;
-const MONGO_URI =
-  "mongodb+srv://Madhan002:Madhan002@cluster0.qoyfb.mongodb.net/behaviouralpredictin";
+const MONGO_URI = process.env.MONGO_URI;
+const ML_URL = process.env.ML_URL; // https://ml-service-d10o.onrender.com
 
+// =============================
+// 🔹 Middlewares
+// =============================
 app.use(express.json());
+app.use(cors());
 
+// =============================
+// 🔹 Test Route
+// =============================
+app.get("/", (req, res) => {
+  res.send("Node Server Running Successfully 🚀");
+});
+
+// =============================
+// 🔹 Models
+// =============================
 const User = require("./modal/user");
 const PredictionResponse = require("./modal/predictionResponseModal");
 
-// 🔹 1. Get Raw Data
+// =============================
+// 🔹 1️⃣ Get Raw Data from MongoDB
+// =============================
 app.get("/ml-data", async (req, res) => {
   try {
     const users = await User.find();
@@ -22,31 +43,39 @@ app.get("/ml-data", async (req, res) => {
   }
 });
 
-
-// 🔹 2. Run ML Pipeline
+// =============================
+// 🔹 2️⃣ Run ML Pipeline
+// =============================
 app.get("/run-ml", async (req, res) => {
   try {
-
     // 1️⃣ Fetch data from MongoDB
     const users = await User.find();
 
-    // 2️⃣ Send data to Flask API
+    if (!users.length) {
+      return res.status(400).json({
+        message: "No user data found in database"
+      });
+    }
+
+    // 2️⃣ Send data to Flask ML API
     const flaskResponse = await axios.post(
-      "http://localhost:5000/predict",
+      `${ML_URL}/predict`,
       users
     );
 
     const predictions = flaskResponse.data;
-    console.log(predictions);
+
     // 3️⃣ Store predictions in MongoDB
-   
-     const result = await PredictionResponse.insertMany(predictions);
+    const result = await PredictionResponse.insertMany(predictions);
+
     res.json({
-      message: "ML Prediction completed and stored successfully",
+      message: "ML Prediction completed and stored successfully ✅",
       totalStored: result.length
     });
 
   } catch (error) {
+    console.error("ML Pipeline Error:", error.message);
+
     res.status(500).json({
       message: "Error running ML pipeline",
       error: error.message
@@ -54,14 +83,16 @@ app.get("/run-ml", async (req, res) => {
   }
 });
 
-
+// =============================
 // 🔹 MongoDB Connection
+// =============================
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log("MongoDB connected");
+    console.log("MongoDB connected successfully ✅");
+
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`Server running on port ${PORT} 🚀`);
     });
   })
   .catch((err) => {
