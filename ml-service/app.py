@@ -6,12 +6,11 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Load pickle files
-models = joblib.load("ml_models.pkl")
-daily_on_times = joblib.load("daily_on_times.pkl")
-lookback = joblib.load("lookback.pkl")
-
+models = joblib.load(os.path.join(BASE_DIR, "ml_models.pkl"))
+daily_on_times = joblib.load(os.path.join(BASE_DIR, "daily_on_times.pkl"))
+lookback = joblib.load(os.path.join(BASE_DIR, "lookback.pkl"))
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
