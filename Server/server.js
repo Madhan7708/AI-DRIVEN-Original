@@ -10,7 +10,7 @@ const app = express();
 // =============================
 const PORT = process.env.PORT || 8000;
 const MONGO_URI = process.env.MONGO_URI;
-const ML_URL = process.env.ML_URL; // https://ml-service-d10o.onrender.com
+const ML_URL = process.env.ML_URL; 
 
 // =============================
 // 🔹 Middlewares
@@ -63,7 +63,6 @@ app.get("/run-ml", async (req, res) => {
       users
     );
     console.log("hello");
-    console.log("Flask ML API Response:", flaskResponse.data);
 
     const predictions = flaskResponse.data;
 
