@@ -46,39 +46,38 @@ app.get("/ml-data", async (req, res) => {
 // =============================
 // 🔹 2️⃣ Run ML Pipeline
 // =============================
-app.get("/run-ml", async (req, res) => {
+app.post("/run-ml", async (req, res) => {
   try {
-    // 1️⃣ Fetch data from MongoDB
-    const users = await User.find();
 
-    if (!users.length) {
-      return res.status(400).json({
-        message: "No user data found in database"
-      });
-    }
-
-    // 2️⃣ Send data to Flask ML API
+    // 1️⃣ Send data to Flask
     const flaskResponse = await axios.post(
       `${ML_URL}/predict`,
-      users
+      req.body, // sending client data
+      {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        timeout: 60000
+      }
     );
-    console.log("hello");
 
+    // 2️⃣ Get ML response
     const predictions = flaskResponse.data;
 
-    // 3️⃣ Store predictions in MongoDB
-    const result = await PredictionResponse.insertMany(predictions);
+    console.log("ML Response:", predictions);
 
-    res.json({
-      message: "ML Prediction completed and stored successfully ✅",
-      totalStored: result.length
+    // 3️⃣ Send response back to frontend
+    res.status(200).json({
+      success: true,
+      data: predictions
     });
 
   } catch (error) {
-    console.error("ML Pipeline Error:", error.message);
+    console.error("Error calling ML service:", error.message);
 
     res.status(500).json({
-      message: "Error running ML pipeline",
+      success: false,
+      message: "Failed to get ML prediction",
       error: error.message
     });
   }
