@@ -6,6 +6,19 @@ const cors = require("cors");
 const app = express();
 
 // =============================
+// 🔹 Cache for ML Results
+// =============================
+let mlCache = {
+  data: null,
+  timestamp: null,
+  CACHE_DURATION: 3600000 // 1 hour in milliseconds
+};
+
+function isCacheValid() {
+  return mlCache.data && (Date.now() - mlCache.timestamp < mlCache.CACHE_DURATION);
+}
+
+// =============================
 // 🔹 Environment Variables
 // =============================
 const PORT = process.env.PORT || 8000;
@@ -44,10 +57,38 @@ app.get("/ml-data", async (req, res) => {
 });
 
 // =============================
+// 🔹 Utility: Retry with Exponential Backoff
+// =============================
+async function makeRequestWithRetry(url, data, maxRetries = 3, initialDelay = 1000) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await axios.post(url, data);
+    } catch (error) {
+      if (error.response?.status === 429 && attempt < maxRetries - 1) {
+        const delay = initialDelay * Math.pow(2, attempt);
+        console.log(`Rate limited. Retrying in ${delay}ms... (Attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
+// =============================
 // 🔹 2️⃣ Run ML Pipeline
 // =============================
 app.get("/run-ml", async (req, res) => {
   try {
+    // Check cache first (optional optimization)
+    if (isCacheValid()) {
+      return res.json({
+        message: "ML Prediction retrieved from cache ⚡",
+        totalStored: mlCache.data.length,
+        cached: true
+      });
+    }
+
     // 1️⃣ Fetch data from MongoDB
     const users = await User.find();
 
@@ -57,11 +98,12 @@ app.get("/run-ml", async (req, res) => {
       });
     }
 
-    // 2️⃣ Send data to Flask ML API
-    const flaskResponse = await axios.post(
+    // 2️⃣ Send data to Flask ML API with retry logic
+    const flaskResponse = await makeRequestWithRetry(
       `${ML_URL}/predict`,
-      users
-      
+      users,
+      3,  // max 3 retries
+      1000  // start with 1 second delay
     );
 
     const predictions = flaskResponse.data;
@@ -69,9 +111,14 @@ app.get("/run-ml", async (req, res) => {
     // 3️⃣ Store predictions in MongoDB
     const result = await PredictionResponse.insertMany(predictions);
 
+    // 4️⃣ Update cache
+    mlCache.data = result;
+    mlCache.timestamp = Date.now();
+
     res.json({
       message: "ML Prediction completed and stored successfully ✅",
-      totalStored: result.length
+      totalStored: result.length,
+      cached: false
     });
 
   } catch (error) {
