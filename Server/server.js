@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const axios = require("axios");
 
 const app = express();
-
 const PORT = process.env.PORT || 8000;
 const MONGO_URI =
   "mongodb+srv://Madhan002:Madhan002@cluster0.qoyfb.mongodb.net/behaviouralpredictin";
