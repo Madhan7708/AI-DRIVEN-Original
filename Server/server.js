@@ -60,7 +60,10 @@ app.get("/run-ml", async (req, res) => {
     // 2️⃣ Send data to Flask ML API
     const flaskResponse = await axios.post(
       `${ML_URL}/predict`,
-      users
+      users,
+      {
+    timeout: 60000 // 60 seconds timeout
+  }
     );
 
     const predictions = flaskResponse.data;
