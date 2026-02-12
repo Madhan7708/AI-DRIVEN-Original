@@ -46,26 +46,22 @@ app.get("/ml-data", async (req, res) => {
 // =============================
 // 🔹 2️⃣ Run ML Pipeline
 // =============================
-app.post("/run-ml", async (req, res) => {
+app.get("/run-ml", async (req, res) => {
   try {
+
+    // 1️⃣ Call Flask ML API
     const flaskResponse = await axios.post(
       `${ML_URL}/predict`,
-      req.body, // sending client data
-      {
-        headers: {
-          "Content-Type": "application/json"
-        },
-        timeout: 60000
-      }
+      {}, // sending empty object since GET has no body
+      { timeout: 60000 }
     );
 
-    // 2️⃣ Get ML response
     const predictions = flaskResponse.data;
-    
 
     console.log("ML Response:", predictions);
 
-const savedData = await PredictionResponse.insertMany(predictions);
+    // 2️⃣ Store in MongoDB
+    const savedData = await PredictionResponse.insertMany(predictions);
 
     // 3️⃣ Send response back
     res.status(200).json({
@@ -74,7 +70,7 @@ const savedData = await PredictionResponse.insertMany(predictions);
       totalStored: savedData.length,
       data: savedData
     });
-   
+
   } catch (error) {
     console.error("Error calling ML service:", error.message);
 
@@ -85,6 +81,7 @@ const savedData = await PredictionResponse.insertMany(predictions);
     });
   }
 });
+
 
 // =============================
 // 🔹 MongoDB Connection
