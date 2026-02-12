@@ -62,6 +62,8 @@ app.get("/run-ml", async (req, res) => {
       `${ML_URL}/predict`,
       users
     );
+    console.log("hello");
+    console.log("Flask ML API Response:", flaskResponse.data);
 
     const predictions = flaskResponse.data;
 
