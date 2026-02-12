@@ -48,8 +48,6 @@ app.get("/ml-data", async (req, res) => {
 // =============================
 app.post("/run-ml", async (req, res) => {
   try {
-
-    // 1️⃣ Send data to Flask
     const flaskResponse = await axios.post(
       `${ML_URL}/predict`,
       req.body, // sending client data
@@ -63,16 +61,20 @@ app.post("/run-ml", async (req, res) => {
 
     // 2️⃣ Get ML response
     const predictions = flaskResponse.data;
-    res.json(predictions);
+    
 
     console.log("ML Response:", predictions);
 
-    // 3️⃣ Send response back to frontend
+const savedData = await PredictionResponse.insertMany(predictions);
+
+    // 3️⃣ Send response back
     res.status(200).json({
       success: true,
-      data: predictions
+      message: "Predictions stored successfully ✅",
+      totalStored: savedData.length,
+      data: savedData
     });
-
+   
   } catch (error) {
     console.error("Error calling ML service:", error.message);
 
