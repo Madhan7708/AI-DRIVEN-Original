@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 import joblib
 import numpy as np
 from datetime import timedelta
@@ -7,109 +6,80 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-CORS(app)  # Allow requests from Node.js
 
-# =============================
-# 🔹 Load Models Safely
-# =============================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-try:
-    models = joblib.load(os.path.join(BASE_DIR, "ml_models.pkl"))
-    lookback = joblib.load(os.path.join(BASE_DIR, "lookback.pkl"))
-    print("✅ ML Models Loaded Successfully")
-except Exception as e:
-    print("❌ Error loading model files:", str(e))
-    models = []
-    lookback = 1
+# 🔥 Load Pickle Files (make sure they are in same folder)
+models = joblib.load("ml_models.pkl")
+daily_on_times = joblib.load("daily_on_times.pkl")
+lookback = joblib.load("lookback.pkl")
 
 
-# =============================
-# 🔹 Prediction Route
-# =============================
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # 1️⃣ Receive JSON data
-        data = request.get_json()
+        print("📥 Request received from Express")
 
-        if not data:
-            return jsonify({"error": "No data received"}), 400
+        # 🔮 Prepare input for prediction
+        prediction_input = daily_on_times.iloc[-lookback:].values.flatten().reshape(1, -1)
 
-        # 2️⃣ Convert JSON to DataFrame
-        df = pd.DataFrame(data)
-
-        # 3️⃣ Validate required column
-        if "minutes" not in df.columns:
-            return jsonify({"error": "Required column 'minutes' missing"}), 400
-
-        # 4️⃣ Ensure enough data for lookback
-        if len(df) < lookback:
-            return jsonify({
-                "error": f"Not enough data. Required at least {lookback} records."
-            }), 400
-
-        # 5️⃣ Prepare input for model
-        prediction_input = (
-            df["minutes"]
-            .tail(lookback)
-            .values
-            .reshape(1, -1)
-        )
+        # 📅 Predict for next day
+        next_day = daily_on_times.index[-1] + timedelta(days=1)
 
         predicted_on = []
-        next_day = pd.Timestamp.now() + timedelta(days=1)
 
-        # 6️⃣ Predict ON time
+        # 🔥 Predict ON times using ML models
         for model in models:
-            mins = float(model.predict(prediction_input)[0])
+            mins = model.predict(prediction_input)[0]
+            secs = mins * 60
 
-            total_seconds = int(mins * 60)
-            h = total_seconds // 3600
-            m = (total_seconds % 3600) // 60
-            s = total_seconds % 60
-
-            timestamp_str = f"{next_day.date()} {h:02d}:{m:02d}:{s:02d}"
+            h = int(secs // 3600)
+            m = int((secs % 3600) // 60)
+            s = int(secs % 60)
 
             predicted_on.append({
-                "Timestamp": timestamp_str,
+                "Timestamp": pd.to_datetime(
+                    f"{next_day.date()} {h:02d}:{m:02d}:{s:02d}"
+                ),
                 "State": "ON"
             })
 
         prediction_df = pd.DataFrame(predicted_on)
 
-        # =============================
-        # 🔥 OFF Time Logic
-        # =============================
-        average_duration_minutes = 31.5
+        # 🔥 Generate OFF times using fixed average duration
+        average_duration_minutes = 31.5  # adjust if needed
+
         off_predictions = []
 
-        for _, row in prediction_df.iterrows():
-            off_time = pd.to_datetime(row["Timestamp"]) + timedelta(
+        for i, row in prediction_df.iterrows():
+            off_time = row["Timestamp"] + timedelta(
                 minutes=average_duration_minutes
             )
 
             off_predictions.append({
-                "Timestamp": off_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "Timestamp": off_time,
                 "State": "OFF"
             })
 
-        # 7️⃣ Combine ON and OFF predictions
+        off_df = pd.DataFrame(off_predictions)
+
+        # 🔄 Combine ON + OFF
         final_prediction = (
-            pd.concat([prediction_df, pd.DataFrame(off_predictions)])
+            pd.concat([prediction_df, off_df])
             .sort_values("Timestamp")
             .reset_index(drop=True)
         )
 
-        # 8️⃣ Return JSON response
-        return jsonify(final_prediction.to_dict("records")), 200
+        # Convert Timestamp to string for JSON response
+        final_prediction["Timestamp"] = final_prediction["Timestamp"].astype(str)
+
+        print("✅ Prediction completed")
+
+        return jsonify(final_prediction.to_dict("records"))
 
     except Exception as e:
+        print("❌ Error:", str(e))
         return jsonify({"error": str(e)}), 500
 
 
-# =============================
-# 🔹 Run Flask App
-# =============================
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

@@ -29,14 +29,15 @@ app.get("/DBdata", async (req, res) => {
     } 
   });
 
-  app.get("/predictiondb",async(req,res)=>{
-    try{
-      const predictions=await PredictionResponse.find();
+  app.get("/predictiondb", async (req, res) => {
+    try {
+      const predictions = await PredictionResponse.find();
       res.json(predictions);
-    }catch(error){
-      res.status(500).json({message:error.message});
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-  })
+  });
+
 app.post("/run-ml", async (req, res) => {
   try {
 
