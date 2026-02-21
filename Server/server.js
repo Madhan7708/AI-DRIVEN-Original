@@ -5,9 +5,11 @@ const cors = require("cors");
 
 const app = express();
 
-const PORT = 8000;
-const MONGO_URI = "mongodb+srv://Madhan002:Madhan002@cluster0.qoyfb.mongodb.net/behaviouralpredictin";  // local MongoDB
-const ML_URL = "http://127.0.0.1:5000";  // Flask local URL
+
+const PORT = process.env.PORT || 8000;
+const MONGO_URI = process.env.MONGO_URI;
+const ML_URL = process.env.ML_URL;
+
 
 app.use(express.json());
 app.use(cors());
