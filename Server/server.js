@@ -29,6 +29,27 @@ app.get("/DBdata", async (req, res) => {
     } 
   });
 
+
+  app.put("/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { State, Timestamp } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      id, 
+      { State, Timestamp }, 
+      { returnDocument: 'after' } // Fixes the deprecation warning
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
   app.get("/predictiondb", async (req, res) => {
     try {
       const predictions = await PredictionResponse.find();
@@ -37,6 +58,7 @@ app.get("/DBdata", async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   });
+
 
 app.post("/run-ml", async (req, res) => {
   try {

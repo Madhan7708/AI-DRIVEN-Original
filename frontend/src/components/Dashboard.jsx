@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import './Dashboard.css';
+import axios from 'axios';
 
 // Home Component
 const Home = () => (
@@ -39,44 +40,91 @@ const Profile = () => {
     setShowModal(true);
   };
 
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Function to fetch data
+  const fetchActivities = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:8000/DBdata'); // Update with your actual port
+      console.log(response.data);
+      setActivities(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  const handleSaveChanges = async (e) => {
+    e.preventDefault(); // Prevent page reload
+
+    // Gather values from the form
+    // You can use state for each input, or pull them directly from the form elements
+    const updatedData = {
+      State: selectedItem.status, // You'll want to update these based on user input
+      Timestamp: `${selectedItem.date} ${selectedItem.time}`
+    };
+
+    try {
+      const response = await axios.put(`http://localhost:8000/update/${selectedItem.id}`, updatedData);
+
+      if (response.status === 200) {
+        alert("Updated successfully!");
+        setShowModal(false);
+        fetchActivities(); // Refresh the table with new data
+      }
+    } catch (error) {
+      console.error("Error updating record:", error);
+      alert("Failed to update record.");
+    }
+  };
+
+
+
   return (
     <div className="dashboard-content">
       <h1>control applicances Activity</h1>
-      
-     
+
+
 
       {/* Navigation Tabs */}
       <div className="d-flex justify-content-between align-items-center mb-3 bg-white p-2 rounded shadow-sm">
-  <ul className="nav nav-pills border-0">
-    <li className="nav-item">
-      <button 
-        className={`nav-link ${activeTab === 'activity' ? 'active' : ''}`} 
-        onClick={() => setActiveTab('activity')}
-      >
-        <i className="bi bi-clock-history me-2"></i> Daily Usages
-      </button>
-    </li>
-    <li className="nav-item">
-      <button 
-        className={`nav-link ${activeTab === 'devices' ? 'active' : ''}`} 
-        onClick={() => setActiveTab('devices')}
-      >
-        <i className="bi bi-cpu me-2"></i> Predict usages
-      </button>
-    </li>
-  </ul>
+        <ul className="nav nav-pills border-0">
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === 'activity' ? 'active' : ''}`}
+              onClick={() => setActiveTab('activity')}
+            >
+              <i className="bi bi-clock-history me-2"></i> Daily Usages
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === 'devices' ? 'active' : ''}`}
+              onClick={() => setActiveTab('devices')}
+            >
+              <i className="bi bi-cpu me-2"></i> Predict usages
+            </button>
+          </li>
+        </ul>
 
-  {/* Refresh Button on the Right */}
-  <button 
-    className="btn btn-outline-secondary btn-sm d-flex align-items-center me-2"
-    onClick={() => window.location.reload()} // Or trigger a data fetch function
-  >
-    <i className="bi bi-arrow-clockwise me-1"></i> Refresh
-  </button>
-</div>
-  <br /><br />
+        {/* Refresh Button on the Right */}
+        <button
+          className="btn btn-outline-secondary btn-sm d-flex align-items-center me-2"
+          onClick={() => window.location.reload()} // Or trigger a data fetch function
+        >
+          <i className="bi bi-arrow-clockwise me-1"></i> Refresh
+        </button>
+      </div>
+      <br /><br />
 
-    
+
       {/* Tab Content Area */}
       <div className="card shadow-sm border-0">
         <div className="card-body p-0">
@@ -93,43 +141,43 @@ const Profile = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                   <td>1</td>
-                    <td>2024-01-20</td>
-                    <td>10:30 AM</td>
-                    <td><span className="badge bg-success">ON</span></td>
-                    <td>edit</td>
+                  {loading ? (
+                    <tr><td colSpan="5" className="text-center">Loading...</td></tr>
+                  ) : (
+                    activities.map((item, index) => {
+                      // Split "2025-10-01 06:32:20" into ["2025-10-01", "06:32:20"]
+                      const dateTimeParts = item.Timestamp ? item.Timestamp.split(' ') : ['N/A', 'N/A'];
+                      const date = dateTimeParts[0];
+                      const time = dateTimeParts[1];
 
-                  </tr>
-                 <tr>
-                   <td>1</td>
-                    <td>2024-01-20</td>
-                    <td>10:30 AM</td>
-                   <td><span className="badge bg-danger">OFF</span></td>
-                    <td>edit</td>
-
-                  </tr>
-                  <tr>
-                   <td>1</td>
-                    <td>2024-01-20</td>
-                    <td>10:30 AM</td>
-                    <td><span className="badge bg-success">ON</span></td>
-                    <td>edit</td>
-
-                  </tr>
-                  <tr>
-                   <td>1</td>
-                    <td>2024-01-20</td>
-                    <td>10:30 AM</td>
-                    <td><span className="badge bg-danger">Off</span></td>
-                     <td><button type="button" className="btn btn-sm btn-outline-warning"
-                      onClick={() => handleEditClick({ id: 1, status: 'ON' })}
-                    >
-                      <i className="bi bi-pencil me-1"></i> Edit
-                    </button></td>
-
-
-                  </tr>
+                      return (
+                        <tr key={item._id || index}>
+                          <td>{index + 1}</td>
+                          <td>{date}</td>
+                          <td>{time}</td>
+                          <td>
+                            {/* Using item.State to match your DB schema */}
+                            <span className={`badge ${item.State === 'ON' ? 'bg-success' : 'bg-danger'}`}>
+                              {item.State}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-sm btn-outline-warning"
+                              onClick={() => handleEditClick({
+                                id: item._id,
+                                status: item.State,
+                                date: date,
+                                time: time
+                              })}
+                            >
+                              <i className="bi bi-pencil me-1"></i> Edit
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -147,15 +195,15 @@ const Profile = () => {
                 </thead>
                 <tbody>
                   <tr>
-                   <td>1</td>
+                    <td>1</td>
                     <td>2024-01-55</td>
                     <td>10:30 AM</td>
                     <td><span className="badge bg-success">ON</span></td>
-                   <td><button type="button" className="btn btn-sm btn-outline-warning"><span className="badge bg-warning">Edit</span></button></td>
+                    <td><button type="button" className="btn btn-sm btn-outline-warning"><span className="badge bg-warning">Edit</span></button></td>
 
                   </tr>
-                 <tr>
-                   <td>1</td>
+                  <tr>
+                    <td>1</td>
                     <td>2024-01-20</td>
                     <td>10:30 AM</td>
                     <td><span className="badge bg-success">ON</span></td>
@@ -163,7 +211,7 @@ const Profile = () => {
 
                   </tr>
                   <tr>
-                   <td>1</td>
+                    <td>1</td>
                     <td>2024-01-20</td>
                     <td>10:30 AM</td>
                     <td><span className="badge bg-success">ON</span></td>
@@ -171,7 +219,7 @@ const Profile = () => {
 
                   </tr>
                   <tr>
-                   <td>1</td>
+                    <td>1</td>
                     <td>2024-01-20</td>
                     <td>10:30 AM</td>
                     <td><span className="badge bg-danger">OFF</span></td>
@@ -184,47 +232,68 @@ const Profile = () => {
           )}
 
           {/* --- BOOTSTRAP MODAL --- */}
-      {showModal && (
-        <>
-          {/* Backdrop */}
-          <div className="modal-backdrop fade show"></div>
-          
-          {/* Modal Dialog */}
-          <div className="modal fade show d-block" tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Edit Usage #{selectedItem?.id}</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
-                </div>
-                <div className="modal-body">
-                  <form>
-                    <div className="mb-3">
-                      <label className="form-label">Current Status</label>
-                      <select className="form-select" defaultValue={selectedItem?.status}>
-                        <option value="ON">ON</option>
-                        <option value="OFF">OFF</option>
-                      </select>
+          {showModal && (
+            <>
+              {/* Backdrop */}
+              <div className="modal-backdrop fade show"></div>
+
+              {/* Modal Dialog */}
+              <div className="modal fade show d-block" tabIndex="-1">
+                <div className="modal-dialog modal-dialog-centered">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Edit Usages</h5>
+                      <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
                     </div>
-                    <div className="mb-3">
-                      <label className="form-label">Update Time</label>
-                      <input type="time" className="form-control" defaultValue="10:30" />
+                    <div className="modal-body">
+                      <form>
+                        <div className="mb-3">
+                          <label className="form-label">Current Status</label>
+                          {/* Use selectedItem.status (mapped from State) */}
+                          <select
+                            className="form-select"
+                            value={selectedItem?.status}
+                            onChange={(e) => setSelectedItem({ ...selectedItem, status: e.target.value })}
+                          >
+                            <option value="ON">ON</option>
+                            <option value="OFF">OFF</option>
+                          </select>
+                        </div>
+
+                        <div className="mb-3">
+                          <label className="form-label">Update Time</label>
+                          {/* Use selectedItem.time (parsed from Timestamp) */}
+                          <input
+                            type="time"
+                            className="form-control"
+                            value={selectedItem?.time}
+                            onChange={(e) => setSelectedItem({ ...selectedItem, time: e.target.value })}
+                          />
+                        </div>
+
+                        <div className="mb-3">
+                          <label className="form-label">Update Date</label>
+                          {/* Use selectedItem.date (parsed from Timestamp) */}
+                          <input
+                            type="date"
+                            className="form-control"
+                            value={selectedItem?.date}
+                            onChange={(e) => setSelectedItem({ ...selectedItem, date: e.target.value })}
+                          />
+                        </div>
+                      </form>
                     </div>
-                    <div className="mb-3">
-                      <label className="form-label">Update Date</label>
-                      <input type="date" className="form-control" defaultValue="2024-01-20" />
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                      <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>
+                        Save Changes
+                      </button>
                     </div>
-                  </form>
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button type="button" className="btn btn-primary" onClick={() => setShowModal(false)}>Save Changes</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </>
-      )}
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -240,10 +309,10 @@ const Dashboard = ({ onLogout }) => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -275,8 +344,8 @@ const Dashboard = ({ onLogout }) => {
       {/* Sidebar - Only show when isSidebarOpen is true */}
       {isSidebarOpen && (
         <div className="sidebar-container">
-          <Sidebar 
-            onLogout={handleLogout} 
+          <Sidebar
+            onLogout={handleLogout}
             onClose={closeSidebar}
             onNavigation={handleNavigation}
           />
@@ -286,7 +355,7 @@ const Dashboard = ({ onLogout }) => {
           )}
         </div>
       )}
-      
+
       {/* Main Content */}
       <div className={`main-content ${isSidebarOpen ? 'with-sidebar' : 'without-sidebar'}`}>
         <header className="header">
@@ -299,7 +368,7 @@ const Dashboard = ({ onLogout }) => {
           <h1>Dashboard</h1>
           <div className="user-info">Welcome, Admin!</div>
         </header>
-        
+
         <div className="content-area">
           <Routes>
             <Route path="/home" element={<Home />} />
