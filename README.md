@@ -1,5 +1,6 @@
-📘 AI-Driven Behavioral and Motion-Based Control of Electrical Appliances
-🧠 Overview
+# 📘 AI-Driven Behavioral and Motion-Based Control of Electrical Appliances
+
+## 🧠 Overview
 
 This project implements an AI-powered smart automation system that automatically controls electrical appliances based on motion, behavior, and environmental data.
 
@@ -7,117 +8,212 @@ The system collects sensor inputs, processes them using a Machine Learning model
 
 This project is inspired by research work published in IJCRT and SAS Publishers.
 
-🚀 Key Features
-✨ Intelligent Decision Making
+## 🚀 Live Deployment
 
-Uses AI/ML models to learn behavioral patterns
+### Deployed Services:
+- **🤖 ML Service**: [https://ml-service-kacd.onrender.com](https://ml-service-kacd.onrender.com)
+- **🔧 Backend Service**: [https://ai-backend-8f2z.onrender.com/DBdata](https://ai-backend-8f2z.onrender.com/DBdata)
+- **💻 Frontend Application**: [https://aicontrolapplicances.vercel.app/](https://aicontrolapplicances.vercel.app/)
 
-Predicts appliance usage based on motion and context
+## ✨ Key Features
 
-Automatically triggers appliances when needed
+### 🧠 Intelligent Decision Making
+- Uses AI/ML models to learn behavioral patterns
+- Predicts appliance usage based on motion and context
+- Automatically triggers appliances when needed
 
-🔌 Appliance Control
+### 🔌 Appliance Control
+- Controls electrical appliances using relay modules / IoT actuators
+- ON/OFF control based on ML prediction results
 
-Controls electrical appliances using relay modules / IoT actuators
+### 📊 Sensor Integration
+- Motion sensors (PIR)
+- Environmental inputs (light level, temperature – optional)
+- Data is sent to ML model for prediction
 
-ON/OFF control based on ML prediction results
+### 📈 Logging & Analytics
+- Stores predictions and user behavior in MongoDB
+- Useful for analysis and future optimization
 
-📊 Sensor Integration
+## 🏗️ System Architecture
 
-Motion sensors (PIR)
+```
+Sensors → Express.js Backend → ML Model (Python)
+              ↓                      ↓
+        MongoDB Database      Predictions
+              ↓
+      Frontend Dashboard
+              ↓
+      Appliance Control
+```
 
-Environmental inputs (light level, temperature – optional)
+## 🛠️ Technology Stack
 
-Data is sent to ML model for prediction
+### Frontend
+- **React.js** - UI Framework
+- **Vite** - Build tool
+- **CSS** - Styling
+- **Deployed on**: Vercel
 
-📈 Logging & Analytics
+### Backend
+- **Node.js** - Runtime
+- **Express.js** - Web framework
+- **MongoDB** - Database
+- **Deployed on**: Render
 
-Stores predictions and user behavior in MongoDB
+### Machine Learning
+- **Python** - ML Framework
+- **TensorFlow/Sklearn** - ML Libraries
+- **Deployed on**: Render
 
-Useful for analysis and future optimization
+## 📋 Project Structure
 
-🏗️ System Architecture
-Sensors → Express.js Backend → ML Model (Google Colab)
-                    ↓
-               MongoDB Database
-                    ↓
-              Appliance Control (Relay)
-
-📥 Step 1: Clone the GitHub Repository
-
-Open Command Prompt / Terminal and run:
-
-git clone https://github.com/Madhan7708/AI-DRIVEN-BEHAVIORAL-AND-MOTION-BASED-CONTROL-OF-ELECTRICAL-APPLIANCE.git
-
-
-Move into the project directory:
-
-cd AI-DRIVEN-BEHAVIORAL-AND-MOTION-BASED-CONTROL-OF-ELECTRICAL-APPLIANCE
-
-
-✅ You are now inside the project folder.
-
-📂 Step 2: Project Structure
+```
 AI-DRIVEN-BEHAVIORAL-AND-MOTION-BASED-CONTROL-OF-ELECTRICAL-APPLIANCE
-├── backend/
-│   ├── server.js              # Express.js server
+├── frontend/                    # React frontend application
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Login.jsx
+│   │   │   └── Sidebar.jsx
+│   │   ├── App.jsx
+│   │   └── main.jsx
 │   ├── package.json
-│   ├── models/
-│   │   ├── userModel.js
-│   │   └── predictionModel.js
+│   └── vite.config.js
+├── Server/                      # Express.js backend
+│   ├── server.js
+│   ├── modal/
+│   │   ├── user.js
+│   │   └── predictionResponseModal.js
+│   └── package.json
+├── ml-service/                  # Python ML service
+│   ├── app.py
+│   ├── requirements.txt
+│   └── Procfile.txt
+├── package.json
 └── README.md
+```
 
+## 🚀 Installation & Setup
 
-⚙️ Step 3: Run the Express.js Backend
-1️⃣ Navigate to backend folder
-cd backend
+### Prerequisites
+- Node.js (v14+)
+- Python (v3.8+)
+- MongoDB (local or cloud)
+- Git
 
-2️⃣ Install dependencies
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/Madhan7708/AI-DRIVEN-BEHAVIORAL-AND-MOTION-BASED-CONTROL-OF-ELECTRICAL-APPLIANCE.git
+cd AI-DRIVEN-BEHAVIORAL-AND-MOTION-BASED-CONTROL-OF-ELECTRICAL-APPLIANCE
+```
+
+### Step 2: Setup Backend (Express.js)
+
+```bash
+cd Server
 npm install
-
-3️⃣ Install nodemon (optional but recommended)
-npm install -g nodemon
-
-4️⃣ Start the server
 npm run dev
+```
 
-✅ Expected Output
-Server running on port 8000
-MongoDB connected successfully
+The backend will run on `http://localhost:8000`
 
+**Environment Variables Required:**
+- `MONGODB_URI` - MongoDB connection string
+- `PORT` - Server port (default: 8000)
 
-📌 Backend runs at:
+### Step 3: Setup Frontend (React)
 
-http://localhost:8000
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-🌐 Step 4: Expose Express Server using ngrok
+The frontend will run on `http://localhost:5173`
 
-Since Google Colab needs a public URL, we use ngrok.
+### Step 4: Setup ML Service (Python)
 
-1️⃣ Install ngrok globally
-npm install -g ngrok
+```bash
+cd ml-service
+pip install -r requirements.txt
+python app.py
+```
 
-2️⃣ Start ngrok tunnel
-ngrok http 8000
+The ML service will run on `http://localhost:5000`
 
-3️⃣ Copy the public URL
+## 📡 API Endpoints
 
-Example:
+### Backend Service
+- **Base URL**: `https://ai-backend-8f2z.onrender.com`
+- **Get Data**: `/DBdata`
+- **Prediction**: `/predict`
+- **User Data**: `/user`
 
-https://noninterpolative-ellen-unghostly.ngrok-free.dev
+### ML Service
+- **Base URL**: `https://ml-service-kacd.onrender.com`
+- **Health Check**: `/health`
+- **Predict**: `/predict`
 
+## 🌐 Live Demo
 
-📌 Your ML endpoint will be:
+- **Frontend**: [https://aicontrolapplicances.vercel.app/](https://aicontrolapplicances.vercel.app/)
+- **Backend API**: [https://ai-backend-8f2z.onrender.com/DBdata](https://ai-backend-8f2z.onrender.com/DBdata)
+- **ML Service**: [https://ml-service-kacd.onrender.com](https://ml-service-kacd.onrender.com)
 
-https://noninterpolative-ellen-unghostly.ngrok-free.dev/ml-data
+## 🔐 Authentication
 
-🧠 Step 5: Run Machine Learning Server in Google Colab
-1️⃣ Open Google Colab
+The system uses JWT-based authentication. Users must login through the frontend to access protected routes.
 
-👉 https://colab.research.google.com
+## 📊 Database
 
-2️⃣ Upload ML file
+MongoDB is used to store:
+- User information
+- Sensor readings
+- Prediction history
+- Appliance control logs
 
-Upload:
+## 🧪 Testing
 
-Main(Colab).py
+To test the system:
+
+1. Open the frontend application
+2. Create an account or login
+3. Add sensors and appliances
+4. Monitor predictions in real-time
+
+## 🛡️ Security
+
+- JWT tokens for API authentication
+- Environment variables for sensitive data
+- CORS enabled for frontend only
+- MongoDB connection strings secured
+
+## 📝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by research published in IJCRT and SAS Publishers
+- Built with Node.js, React.js, Python, and MongoDB
+- Deployed on Render (Backend & ML) and Vercel (Frontend)
+
+## 📧 Contact
+
+For questions or support, please open an issue on the GitHub repository.
+
+---
+
+**Last Updated**: February 2026 | **Status**: Active & Deployed
