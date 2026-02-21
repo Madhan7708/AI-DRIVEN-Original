@@ -48,7 +48,7 @@ const Profile = () => {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/DBdata');
+      const response = await axios.get('https://ai-backend-8f2z.onrender.com/DBdata');
       setActivities(response.data);
     } catch (error) {
       console.error("Error fetching activity data:", error);
@@ -60,7 +60,7 @@ const Profile = () => {
   const fetchPredictions = async () => {
     try {
       setPredLoading(true);
-      const response = await axios.get('http://localhost:8000/predictiondb');
+      const response = await axios.get('https://ai-backend-8f2z.onrender.com/predictiondb');
       setPredictions(response.data);
     } catch (error) {
       console.error("Error fetching prediction data:", error);
@@ -90,7 +90,7 @@ const Profile = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:8000/update/${selectedItem.id}`, updatedData);
+      const response = await axios.put(`https://ai-backend-8f2z.onrender.com/update/${selectedItem.id}`, updatedData);
       if (response.status === 200) {
         alert("Updated successfully!");
         setShowModal(false);
@@ -109,7 +109,7 @@ const handleRefresh = async () => {
     
       setPredLoading(true);
       
-      const response = await axios.post('http://localhost:8000/run-ml');
+      const response = await axios.post('https://ai-backend-8f2z.onrender.com/run-ml');
       
       if (response.data.success) {
         alert(`Refresh Successful`);
