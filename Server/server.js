@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.send("Node Server Running Successfully 🚀");
+  res.send("Node Server Running Successfully");
 });
 
 const User = require("./modal/user");
@@ -40,7 +40,7 @@ app.get("/DBdata", async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       id, 
       { State, Timestamp }, 
-      { returnDocument: 'after' } // Fixes the deprecation warning
+      { returnDocument: 'after' } 
     );
 
     if (!updatedUser) {
@@ -66,10 +66,9 @@ app.get("/DBdata", async (req, res) => {
 app.post("/run-ml", async (req, res) => {
   try {
 
-    // 🔹 Get data from MongoDB
     const users = await User.find();
 
-    // 🔹 Send data to Flask
+    // Send data to Flask
     const flaskResponse = await axios.post(
       `${ML_URL}/predict`,
       users,
@@ -79,7 +78,7 @@ app.post("/run-ml", async (req, res) => {
     const predictions = flaskResponse.data;
 
 
-    // 🔹 Store predictions
+    // Store predictions
     const savedData = await PredictionResponse.insertMany(predictions);
 
     res.status(200).json({
@@ -104,10 +103,10 @@ app.post("/run-ml", async (req, res) => {
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log("MongoDB connected successfully ✅");
+    console.log("MongoDB connected successfully ");
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT} 🚀`);
+      console.log(`Server running on port ${PORT} `);
     });
   })
   .catch((err) => {

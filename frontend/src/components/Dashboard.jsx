@@ -43,7 +43,7 @@ const Profile = () => {
   const [predictions, setPredictions] = useState([]);
   const [predLoading, setPredLoading] = useState(true);
 
-  // --- FETCH FUNCTIONS ---
+  //  FETCH FUNCTIONS
 
   const fetchActivities = async () => {
     try {
@@ -68,14 +68,11 @@ const Profile = () => {
       setPredLoading(false);
     }
   };
-
-  // Run both on mount
   useEffect(() => {
     fetchActivities();
     fetchPredictions();
   }, []);
 
-  // --- HANDLERS ---
 
   const handleEditClick = (item) => {
     setSelectedItem(item);
@@ -94,7 +91,7 @@ const Profile = () => {
       if (response.status === 200) {
         alert("Updated successfully!");
         setShowModal(false);
-        // Refresh both to stay in sync
+     
         fetchActivities();
         fetchPredictions();
       }
@@ -113,7 +110,6 @@ const handleRefresh = async () => {
       
       if (response.data.success) {
         alert(`Refresh Successful`);
-        // 3. Re-fetch the newly stored predictions to update the UI
         await fetchPredictions();
       }
   } catch (error) {
@@ -128,7 +124,6 @@ const handleRefresh = async () => {
     <div className="dashboard-content">
       <h1 className="mb-4">Control Appliances Activity</h1>
 
-      {/* Navigation Tabs */}
       <div className="d-flex justify-content-between align-items-center mb-3 bg-white p-2 rounded shadow-sm">
         <ul className="nav nav-pills border-0">
           <li className="nav-item">
@@ -152,7 +147,6 @@ const handleRefresh = async () => {
         
       </div>
 
-      {/* Tab Content Area */}
       <div className="card shadow-sm border-0">
         <div className="card-body p-0">
           {activeTab === 'activity' ? (
@@ -231,7 +225,6 @@ const handleRefresh = async () => {
         </div>
       </div>
 
-      {/* Modal remains the same as your provided version, using selectedItem state */}
       {showModal && (
         <>
           <div className="modal-backdrop fade show"></div>

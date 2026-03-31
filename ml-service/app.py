@@ -13,6 +13,13 @@ daily_on_times = joblib.load("daily_on_times.pkl")
 lookback = joblib.load("lookback.pkl")
 
 
+
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({
+        "message": "Flask API is running successfully 🚀",
+        "usage": "Send POST request to /predict for predictions"
+})
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
